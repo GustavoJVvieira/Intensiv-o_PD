@@ -182,7 +182,6 @@ with tab_ementas:
     cursos_para_ementa = sorted(df["Curso"].unique())
     curso_selecionado_ementa = st.selectbox("Escolha o curso para ver a ementa:", cursos_para_ementa)
 
-    # --- CORREÇÃO DO CAMINHO AQUI ---
     # Obtém o diretório base do script Python sendo executado
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     # Constrói o caminho completo para a pasta dos PDFs
@@ -192,18 +191,22 @@ with tab_ementas:
     pdf_filename = f"{curso_selecionado_ementa.replace(' ', '_')}_Ementa.pdf"
     pdf_path = os.path.join(PDF_FOLDER_PATH, pdf_filename)
 
+    st.info(f"Tentando carregar: {pdf_path}") # <--- Nova linha de DEBUG
+    
     if os.path.exists(pdf_path):
+        st.success(f"Arquivo '{pdf_filename}' encontrado!") # <--- Nova linha de DEBUG
         try:
             with open(pdf_path, "rb") as f:
-                base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+                pdf_content = f.read()
+                st.info(f"Tamanho do arquivo: {len(pdf_content) / (1024*1024):.2f} MB") # <--- Nova linha de DEBUG
+                base64_pdf = base64.b64encode(pdf_content).decode('utf-8')
 
             pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="700px" type="application/pdf"></iframe>'
             st.markdown(pdf_display, unsafe_allow_html=True)
+            st.success("PDF exibido com sucesso!") # <--- Nova linha de DEBUG
         except Exception as e:
-            st.error(f"Erro ao carregar o PDF: {e}. Verifique se o arquivo está corrompido ou o formato.")
-            # Descomente a linha abaixo para ver o caminho exato que gerou o erro (útil para depuração)
-            # st.error(f"Caminho tentado: {pdf_path}")
+            st.error(f"Erro ao carregar ou exibir o PDF: {e}")
+            st.error(f"Caminho tentado no erro: {pdf_path}")
     else:
-        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada em '{PDF_FOLDER_PATH}/{pdf_filename}'.")
-        # Descomente a linha abaixo para ver o caminho exato que não foi encontrado (útil para depuração)
-        # st.warning(f"Caminho esperado: {pdf_path}")
+        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada.")
+        st.warning(f"Caminho esperado: {pdf_path}")
