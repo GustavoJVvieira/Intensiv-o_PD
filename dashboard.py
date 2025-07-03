@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import os
+import base64 # Manter o import, embora não seja usado para download direto, caso você queira voltar atrás
 # base64 não é mais necessário
 # import base64 
 
