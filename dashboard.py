@@ -191,7 +191,7 @@ with tab_ementas:
         "JavaScript": "ID_DO_SEU_ARQUIVO_JAVASCRIPT",
         "POO": "ID_DO_SEU_ARQUIVO_POO",
         "Python II": "ID_DO_SEU_ARQUIVO_PYTHON_II",
-        "Banco de Dados": "http://drive.google.com/uc?export=download&id=1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM", # Este é um ID de exemplo, substitua pelo seu!
+        "Banco de Dados": "1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM", # Este é um ID de exemplo, substitua pelo seu!
         "Fundamentos de Interface": "ID_DO_SEU_ARQUIVO_FUNDAMENTOS_INTERFACE",
         "React JS": "ID_DO_SEU_ARQUIVO_REACT_JS",
         "Web com mentalidade ágil": "ID_DO_SEU_ARQUIVO_WEB_AGIL",
