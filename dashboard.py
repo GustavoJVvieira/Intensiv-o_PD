@@ -2,7 +2,8 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import os
-import base64 # Manter o import, embora não seja usado para download direto, caso você queira voltar atrás
+# base64 não é mais necessário, mas pode deixar se quiser manter
+# import base64 
 
 # Dados originais (tempo em HH:MM:SS)
 data = [
@@ -173,42 +174,54 @@ with tab_detalhamento:
     }).set_index("Curso"))
 
 # =============================================================================
-# Conteúdo da Aba "Ementas dos Cursos"
+# Conteúdo da Aba "Ementas dos Cursos" - USANDO GOOGLE DRIVE
 # =============================================================================
 with tab_ementas:
-    st.subheader("Baixar Ementas dos Cursos")
+    st.subheader("Acessar Ementas dos Cursos via Google Drive")
 
-    # Selecionar o curso para ver a ementa
+    # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID
+    # VOCÊ PRECISA PREENCHER ESTE DICIONÁRIO COM OS IDs DOS SEUS ARQUIVOS!
+    # Exemplo:
+    google_drive_pdf_ids = {
+        "Linux": "ID_DO_SEU_ARQUIVO_LINUX",
+        "Scratch": "ID_DO_SEU_ARQUIVO_SCRATCH",
+        "Introdução a Web": "ID_DO_SEU_ARQUIVO_INTRODUCAO_WEB",
+        "No Code": "ID_DO_SEU_ARQUIVO_NO_CODE",
+        "Python": "ID_DO_SEU_ARQUIVO_PYTHON",
+        "JavaScript": "ID_DO_SEU_ARQUIVO_JAVASCRIPT",
+        "POO": "ID_DO_SEU_ARQUIVO_POO",
+        "Python II": "ID_DO_SEU_ARQUIVO_PYTHON_II",
+        "Banco de Dados": "https://drive.google.com/uc?export=download&id=1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM", # Este é um ID de exemplo, substitua pelo seu!
+        "Fundamentos de Interface": "ID_DO_SEU_ARQUIVO_FUNDAMENTOS_INTERFACE",
+        "React JS": "ID_DO_SEU_ARQUIVO_REACT_JS",
+        "Web com mentalidade ágil": "ID_DO_SEU_ARQUIVO_WEB_AGIL",
+        "Frameworks Front-End": "ID_DO_SEU_ARQUIVO_FRAMEWORKS_FRONT_END",
+        "React Native": "ID_DO_SEU_ARQUIVO_REACT_NATIVE",
+        "Flutter": "ID_DO_SEU_ARQUIVO_FLUTTER",
+    }
+    # Certifique-se de que cada curso listado em 'data' tenha um ID correspondente aqui!
+
+    # Base URL para links de download direto do Google Drive
+    GOOGLE_DRIVE_DOWNLOAD_BASE_URL = "https://drive.google.com/uc?export=download&id="
+
+    # Selecionar o curso
     cursos_para_ementa = sorted(df["Curso"].unique())
-    curso_selecionado_ementa = st.selectbox("Escolha o curso para baixar a ementa:", cursos_para_ementa)
+    curso_selecionado_ementa = st.selectbox("Escolha o curso para acessar a ementa:", cursos_para_ementa)
 
-    # Obtém o diretório base do script Python sendo executado
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    # Constrói o caminho completo para a pasta dos PDFs
-    PDF_FOLDER_PATH = os.path.join(BASE_DIR, "ementas_pdfs")
+    if curso_selecionado_ementa in google_drive_pdf_ids:
+        file_id = google_drive_pdf_ids[curso_selecionado_ementa]
+        pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
+        
+        st.info(f"Gerando link para: {pdf_url}") # Mensagem de depuração
+        
+        # Fornece um link direto para o PDF
+        st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
+        
+        # Opcional: Adicionar um botão "Ver PDF em Nova Aba"
+        st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
 
-    # Constrói o nome do arquivo PDF (ajuste conforme seu padrão de nomenclatura)
-    pdf_filename = f"{curso_selecionado_ementa.replace(' ', '_')}_Ementa.pdf"
-    pdf_path = os.path.join(PDF_FOLDER_PATH, pdf_filename)
-
-    # As mensagens de depuração são úteis, vou mantê-las mas você pode remover depois de testar
-    st.info(f"Caminho esperado do arquivo: {pdf_path}") 
-    
-    if os.path.exists(pdf_path):
-        try:
-            with open(pdf_path, "rb") as file:
-                st.download_button(
-                    label=f"Clique para Baixar a Ementa de {curso_selecionado_ementa}",
-                    data=file,
-                    file_name=pdf_filename,
-                    mime="application/pdf",
-                    help="Clique para baixar o arquivo PDF da ementa."
-                )
-            st.success("O botão de download da ementa está disponível acima.")
-            st.info(f"Tamanho do arquivo para download: {os.path.getsize(pdf_path) / (1024*1024):.2f} MB") # Info adicional
-        except Exception as e:
-            st.error(f"Erro ao preparar o download do PDF: {e}")
-            st.error(f"Caminho do arquivo com erro: {pdf_path}")
+        st.success("Clique no link ou botão acima para acessar a ementa.")
+        st.info("Verifique se o PDF está configurado para 'Qualquer pessoa com o link' no Google Drive.")
     else:
-        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada.")
-        st.warning(f"Certifique-se de que o arquivo '{pdf_filename}' existe em '{PDF_FOLDER_PATH}'.")
+        st.warning(f"ID do Google Drive para '{curso_selecionado_ementa}' não encontrado no mapeamento. Por favor, adicione-o.")
+        st.warning("Certifique-se de que você copiou e colou o ID correto de cada arquivo PDF no dicionário `google_drive_pdf_ids` no código.")
