@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import os
-import base64
+import base64 # Manter o import, embora não seja usado para download direto, caso você queira voltar atrás
 
 # Dados originais (tempo em HH:MM:SS)
 data = [
@@ -176,11 +176,11 @@ with tab_detalhamento:
 # Conteúdo da Aba "Ementas dos Cursos"
 # =============================================================================
 with tab_ementas:
-    st.subheader("Visualizar Ementas dos Cursos")
+    st.subheader("Baixar Ementas dos Cursos")
 
     # Selecionar o curso para ver a ementa
     cursos_para_ementa = sorted(df["Curso"].unique())
-    curso_selecionado_ementa = st.selectbox("Escolha o curso para ver a ementa:", cursos_para_ementa)
+    curso_selecionado_ementa = st.selectbox("Escolha o curso para baixar a ementa:", cursos_para_ementa)
 
     # Obtém o diretório base do script Python sendo executado
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -191,22 +191,24 @@ with tab_ementas:
     pdf_filename = f"{curso_selecionado_ementa.replace(' ', '_')}_Ementa.pdf"
     pdf_path = os.path.join(PDF_FOLDER_PATH, pdf_filename)
 
-    st.info(f"Tentando carregar: {pdf_path}") # <--- Nova linha de DEBUG
+    # As mensagens de depuração são úteis, vou mantê-las mas você pode remover depois de testar
+    st.info(f"Caminho esperado do arquivo: {pdf_path}") 
     
     if os.path.exists(pdf_path):
-        st.success(f"Arquivo '{pdf_filename}' encontrado!") # <--- Nova linha de DEBUG
         try:
-            with open(pdf_path, "rb") as f:
-                pdf_content = f.read()
-                st.info(f"Tamanho do arquivo: {len(pdf_content) / (1024*1024):.2f} MB") # <--- Nova linha de DEBUG
-                base64_pdf = base64.b64encode(pdf_content).decode('utf-8')
-
-            pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="700px" type="application/pdf"></iframe>'
-            st.markdown(pdf_display, unsafe_allow_html=True)
-            st.success("PDF exibido com sucesso!") # <--- Nova linha de DEBUG
+            with open(pdf_path, "rb") as file:
+                st.download_button(
+                    label=f"Clique para Baixar a Ementa de {curso_selecionado_ementa}",
+                    data=file,
+                    file_name=pdf_filename,
+                    mime="application/pdf",
+                    help="Clique para baixar o arquivo PDF da ementa."
+                )
+            st.success("O botão de download da ementa está disponível acima.")
+            st.info(f"Tamanho do arquivo para download: {os.path.getsize(pdf_path) / (1024*1024):.2f} MB") # Info adicional
         except Exception as e:
-            st.error(f"Erro ao carregar ou exibir o PDF: {e}")
-            st.error(f"Caminho tentado no erro: {pdf_path}")
+            st.error(f"Erro ao preparar o download do PDF: {e}")
+            st.error(f"Caminho do arquivo com erro: {pdf_path}")
     else:
         st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada.")
-        st.warning(f"Caminho esperado: {pdf_path}")
+        st.warning(f"Certifique-se de que o arquivo '{pdf_filename}' existe em '{PDF_FOLDER_PATH}'.")
