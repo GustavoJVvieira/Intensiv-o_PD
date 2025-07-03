@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import os
-# base64 não é mais necessário, mas pode deixar se quiser manter
+# base64 não é mais necessário
 # import base64 
 
 # Dados originais (tempo em HH:MM:SS)
@@ -174,32 +174,30 @@ with tab_detalhamento:
     }).set_index("Curso"))
 
 # =============================================================================
-# Conteúdo da Aba "Ementas dos Cursos" - USANDO GOOGLE DRIVE
+# Conteúdo da Aba "Ementas dos Cursos" - USANDO GOOGLE DRIVE COM IDs
 # =============================================================================
 with tab_ementas:
-    st.subheader("Acessar Ementas dos Cursos via Google Drive")
+    st.subheader("Acessar Ementas dos Cursos")
 
     # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID
-    # VOCÊ PRECISA PREENCHER ESTE DICIONÁRIO COM OS IDs DOS SEUS ARQUIVOS!
-    # Exemplo:
+    # Estes IDs foram extraídos dos links de compartilhamento que você forneceu.
     google_drive_pdf_ids = {
-        "Linux": "ID_DO_SEU_ARQUIVO_LINUX",
-        "Scratch": "ID_DO_SEU_ARQUIVO_SCRATCH",
-        "Introdução a Web": "ID_DO_SEU_ARQUIVO_INTRODUCAO_WEB",
-        "No Code": "ID_DO_SEU_ARQUIVO_NO_CODE",
-        "Python": "ID_DO_SEU_ARQUIVO_PYTHON",
-        "JavaScript": "ID_DO_SEU_ARQUIVO_JAVASCRIPT",
-        "POO": "ID_DO_SEU_ARQUIVO_POO",
-        "Python II": "ID_DO_SEU_ARQUIVO_PYTHON_II",
-        "Banco de Dados": "1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM", # Este é um ID de exemplo, substitua pelo seu!
-        "Fundamentos de Interface": "ID_DO_SEU_ARQUIVO_FUNDAMENTOS_INTERFACE",
-        "React JS": "ID_DO_SEU_ARQUIVO_REACT_JS",
-        "Web com mentalidade ágil": "ID_DO_SEU_ARQUIVO_WEB_AGIL",
-        "Frameworks Front-End": "ID_DO_SEU_ARQUIVO_FRAMEWORKS_FRONT_END",
-        "React Native": "ID_DO_SEU_ARQUIVO_REACT_NATIVE",
-        "Flutter": "ID_DO_SEU_ARQUIVO_FLUTTER",
+        "Linux": "1LO6ef6nBfqu7mi2m2_6K2zGJVVCNoNhR",
+        "Scratch": "1ptQTvQxs_KgYa7dXwKC8lEq3snzZAsy9",
+        "Introdução a Web": "1NxyAv9iLlzGIPNUhVPdd8PehOiFNySnO",
+        "No Code": "14DYBFTAhBDnkL5QYAoWUEjAl4hdquaJ4",
+        "Python": "1IBvSgpp0l83rgxzE3UfOXY-RRzAsqnw5",
+        "JavaScript": "1KEhBynKcG1FnmdGbGvi60CeCIIuEXJfa", # ID de arquivo corrigido para JavaScript
+        "POO": "1IEGCznbmPAjdL5o5A1G86q5pp5oHD2sc",
+        "Python II": "1ieUHBoaYAmRvEcX2kOvqC5bGiFRO4pB6",
+        "Banco de Dados": "1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM",
+        "Fundamentos de Interface": "1Kwzlg4zi7XPxk3PmziGugRNYPapEJ3qf",
+        "React JS": "1F9-Al3-56QGUdlY3fd-R8yvMvFevFD1A",
+        "Web com mentalidade ágil": "1Mfvqg_p5y6UnYGF79w-K1fUxWKJxajlM",
+        "Frameworks Front-End": "1CKK6oZ3cGXcLmxxrwBV6fTLssOAN1_Is",
+        "React Native": "1R2fno9IohbpDisR2743dGN-oU8ZYkjqw",
+        "Flutter": "1gpSctdd8Uf6rsmNTmp-eltq5-DxXa-hO",
     }
-    # Certifique-se de que cada curso listado em 'data' tenha um ID correspondente aqui!
 
     # Base URL para links de download direto do Google Drive
     GOOGLE_DRIVE_DOWNLOAD_BASE_URL = "https://drive.google.com/uc?export=download&id="
@@ -212,16 +210,13 @@ with tab_ementas:
         file_id = google_drive_pdf_ids[curso_selecionado_ementa]
         pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
         
-        st.info(f"Gerando link para: {pdf_url}") # Mensagem de depuração
-        
-        # Fornece um link direto para o PDF
         st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
         
-        # Opcional: Adicionar um botão "Ver PDF em Nova Aba"
+        # Botão secundário para abrir em nova aba (opcional)
         st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
 
         st.success("Clique no link ou botão acima para acessar a ementa.")
-        st.info("Verifique se o PDF está configurado para 'Qualquer pessoa com o link' no Google Drive.")
+        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link' no Google Drive.")
     else:
-        st.warning(f"ID do Google Drive para '{curso_selecionado_ementa}' não encontrado no mapeamento. Por favor, adicione-o.")
-        st.warning("Certifique-se de que você copiou e colou o ID correto de cada arquivo PDF no dicionário `google_drive_pdf_ids` no código.")
+        st.warning(f"ID do Google Drive para '{curso_selecionado_ementa}' não encontrado no mapeamento.")
+        st.caption("Por favor, verifique se o curso e seu ID correspondente estão corretos no dicionário do código.")
