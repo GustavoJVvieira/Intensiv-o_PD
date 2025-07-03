@@ -182,12 +182,15 @@ with tab_ementas:
     cursos_para_ementa = sorted(df["Curso"].unique())
     curso_selecionado_ementa = st.selectbox("Escolha o curso para ver a ementa:", cursos_para_ementa)
 
-    # Caminho para a pasta dos PDFs
-    PDF_FOLDER = "ementas_pdfs"
+    # --- CORREÇÃO DO CAMINHO AQUI ---
+    # Obtém o diretório base do script Python sendo executado
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Constrói o caminho completo para a pasta dos PDFs
+    PDF_FOLDER_PATH = os.path.join(BASE_DIR, "ementas_pdfs")
 
     # Constrói o nome do arquivo PDF (ajuste conforme seu padrão de nomenclatura)
     pdf_filename = f"{curso_selecionado_ementa.replace(' ', '_')}_Ementa.pdf"
-    pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
+    pdf_path = os.path.join(PDF_FOLDER_PATH, pdf_filename)
 
     if os.path.exists(pdf_path):
         try:
@@ -198,5 +201,9 @@ with tab_ementas:
             st.markdown(pdf_display, unsafe_allow_html=True)
         except Exception as e:
             st.error(f"Erro ao carregar o PDF: {e}. Verifique se o arquivo está corrompido ou o formato.")
+            # Descomente a linha abaixo para ver o caminho exato que gerou o erro (útil para depuração)
+            # st.error(f"Caminho tentado: {pdf_path}")
     else:
-        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada em '{PDF_FOLDER}/{pdf_filename}'. Por favor, verifique o nome do arquivo e o diretório.")
+        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada em '{PDF_FOLDER_PATH}/{pdf_filename}'.")
+        # Descomente a linha abaixo para ver o caminho exato que não foi encontrado (útil para depuração)
+        # st.warning(f"Caminho esperado: {pdf_path}")
