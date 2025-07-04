@@ -208,12 +208,8 @@ with tab_ementas:
         file_id = google_drive_ementa_ids[curso_selecionado_ementa]
         pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
         
-        st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
-        
         st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
 
-        st.success("Clique no link ou botão acima para acessar a ementa.")
-        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link'.")
     else:
         st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
 
@@ -254,11 +250,8 @@ with tab_exercicios:
         file_id_exercicio = google_drive_exercicio_ids[curso_selecionado_exercicio]
         exercicio_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id_exercicio}"
         
-        st.markdown(f"**[{curso_selecionado_exercicio} - Clique para abrir/baixar os Exercícios]({exercicio_url})**", unsafe_allow_html=True)
-        
         st.markdown(f'<a href="{exercicio_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Exercícios de {curso_selecionado_exercicio} em Nova Aba</a>', unsafe_allow_html=True)
 
-        st.success("Clique no link ou botão acima para acessar os exercícios.")
-        st.caption("Os exercícios serão abertos/baixados diretamente do Google Drive. Certifique-se de que o arquivo está configurado para 'Qualquer pessoa com o link'.")
+
     else:
         st.warning(f"Exercícios para '{curso_selecionado_exercicio}' não encontrados no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
