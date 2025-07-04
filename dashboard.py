@@ -2,9 +2,6 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import os
-import base64 # Manter o import, embora não seja usado para download direto, caso você queira voltar atrás
-# base64 não é mais necessário
-# import base64 
 
 # Dados originais (tempo em HH:MM:SS)
 data = [
@@ -48,10 +45,10 @@ df["Reducao_fmt"] = df["Reducao_seg"].apply(seconds_to_time)
 st.title("Dashboard de Redução de Carga Horária")
 
 # --- Definição das Abas Principais ---
-tab_geral, tab_detalhamento, tab_ementas = st.tabs(["Visão Geral por Módulo", "Detalhamento por Curso", "Ementas dos Cursos"])
+tab_geral, tab_detalhamento, tab_ementas, tab_exercicios = st.tabs(["Visão Geral por Módulo", "Detalhamento por Curso", "Ementas dos Cursos", "Exercícios"])
 
 # =============================================================================
-# Conteúdo da Aba "Visão Geral por Módulo"
+# Conteúdo da Aba "Visão Geral por Módulo" (Sem Alterações)
 # =============================================================================
 with tab_geral:
     st.subheader("Visão Geral do Tempo por Módulo")
@@ -112,7 +109,7 @@ with tab_geral:
     st.table(resumo_modulo[["Módulo", "Antes", "Depois", "Reducao", "% Redução"]].set_index("Módulo"))
 
 # =============================================================================
-# Conteúdo da Aba "Detalhamento por Curso"
+# Conteúdo da Aba "Detalhamento por Curso" (Sem Alterações)
 # =============================================================================
 with tab_detalhamento:
     st.subheader("Detalhamento do Tempo por Curso")
@@ -175,20 +172,20 @@ with tab_detalhamento:
     }).set_index("Curso"))
 
 # =============================================================================
-# Conteúdo da Aba "Ementas dos Cursos" - USANDO GOOGLE DRIVE COM IDs
+# Conteúdo da Aba "Ementas dos Cursos" - IDs de Ementas
 # =============================================================================
 with tab_ementas:
     st.subheader("Acessar Ementas dos Cursos")
 
-    # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID
-    # Estes IDs foram extraídos dos links de compartilhamento que você forneceu.
-    google_drive_pdf_ids = {
+    # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID para Ementas
+    # Mantidos os IDs originais das ementas.
+    google_drive_ementa_ids = {
         "Linux": "1LO6ef6nBfqu7mi2m2_6K2zGJVVCNoNhR",
         "Scratch": "1ptQTvQxs_KgYa7dXwKC8lEq3snzZAsy9",
         "Introdução a Web": "1NxyAv9iLlzGIPNUhVPdd8PehOiFNySnO",
         "No Code": "14DYBFTAhBDnkL5QYAoWUEjAl4hdquaJ4",
         "Python": "1IBvSgpp0l83rgxzE3UfOXY-RRzAsqnw5",
-        "JavaScript": "1KEhBynKcG1FnmdGbGvi60CeCIIuEXJfa", # ID de arquivo corrigido para JavaScript
+        "JavaScript": "1KEhBynKcG1FnmdGbGvi60CeCIIuEXJfa",
         "POO": "1IEGCznbmPAjdL5o5A1G86q5pp5oHD2sc",
         "Python II": "1ieUHBoaYAmRvEcX2kOvqC5bGiFRO4pB6",
         "Banco de Dados": "1-BLddbRgJaBvJJHZCi6g9ezAqmkQZKAM",
@@ -207,17 +204,61 @@ with tab_ementas:
     cursos_para_ementa = sorted(df["Curso"].unique())
     curso_selecionado_ementa = st.selectbox("Escolha o curso para acessar a ementa:", cursos_para_ementa)
 
-    if curso_selecionado_ementa in google_drive_pdf_ids:
-        file_id = google_drive_pdf_ids[curso_selecionado_ementa]
+    if curso_selecionado_ementa in google_drive_ementa_ids:
+        file_id = google_drive_ementa_ids[curso_selecionado_ementa]
         pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
         
         st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
         
-        # Botão secundário para abrir em nova aba (opcional)
         st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
 
         st.success("Clique no link ou botão acima para acessar a ementa.")
-        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link' no Google Drive.")
+        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link'.")
     else:
-        st.warning(f"ID do Google Drive para '{curso_selecionado_ementa}' não encontrado no mapeamento.")
-        st.caption("Por favor, verifique se o curso e seu ID correspondente estão corretos no dicionário do código.")
+        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
+
+# =============================================================================
+# NOVA ABA: Exercícios - IDs dos Exercícios (Corrigidos e Completos)
+# =============================================================================
+with tab_exercicios:
+    st.subheader("Acessar Exercícios dos Cursos")
+
+    # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID para EXERCÍCIOS
+    # Estes IDs foram fornecidos por você como sendo os dos EXERCÍCIOS.
+    google_drive_exercicio_ids = {
+        "Banco de Dados": "1wzXsy8ZlcepCzErjXDe05Gx3AbcHJPIA",
+        "Introdução a Web": "15twxPTsqtB99OhD4LYJVq6C_nhZ_xmiv", # Novo link de exercício
+        "Flutter": "1y7tXCeAFHuvXf2zxR591PoI1WMTTideX",
+        "Fundamentos de Interface": "1SgA5seeRl6zKgMcu9K3YL9orOUk_dP92",
+        "POO": "1ZYjfUP242N-R1KwpLNxf8WjJG_RF8wqn", # ID de exercício de POO confirmado
+        "JavaScript": "17uoCTOFEGG3PPa4oZgU68GkQWLyFANam", # NOVO ID CORRETO para exercício de JS
+        "Linux": "1WwyJrkgqZOULKffMWnYGCULyFtPY0X-5",
+        "Web com mentalidade ágil": "11DZlx4-zDP7UlnhlChja_pmG2Z5QQaUw", # Mapeado de "Mentalidade Agil"
+        "No Code": "1lgsguKrm4Y2UZtD5VZkjbb63ABg821L6",
+        "Python II": "1dYuBwLDVDvsB5LNTuMD39iIAPGT2RWa_",
+        "Python": "1jUs88fMfC9skfDMkRElgOtK8NDpST4YO", # Mapeado de "Python I"
+        "React JS": "1PadtJW4-8HHXPj2xj7I4LupRMOOlV9uD",
+        "React Native": "1UV3ZyENIWCRO2GpGmq7gl8OqLUDNUUAm",
+        "Scratch": "1QpxqQj44x3hdmC1VEkjmCamWd5dZooyw", # Novo link de exercício
+        "Frameworks Front-End": "1mG0MlxJQeK-cdNRMZnCY2Ggd-8fn_Llz", # Mapeado de "Desenvolvimento de Interfaces Web"
+    }
+
+    # Base URL para links de download direto do Google Drive (o mesmo)
+    GOOGLE_DRIVE_DOWNLOAD_BASE_URL = "https://drive.google.com/uc?export=download&id="
+
+    # Selecionar o curso para os exercícios
+    cursos_para_exercicio = sorted(df["Curso"].unique())
+    curso_selecionado_exercicio = st.selectbox("Escolha o curso para acessar os exercícios:", cursos_para_exercicio)
+
+    if curso_selecionado_exercicio in google_drive_exercicio_ids:
+        file_id_exercicio = google_drive_exercicio_ids[curso_selecionado_exercicio]
+        exercicio_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id_exercicio}"
+        
+        st.markdown(f"**[{curso_selecionado_exercicio} - Clique para abrir/baixar os Exercícios]({exercicio_url})**", unsafe_allow_html=True)
+        
+        st.markdown(f'<a href="{exercicio_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Exercícios de {curso_selecionado_exercicio} em Nova Aba</a>', unsafe_allow_html=True)
+
+        st.success("Clique no link ou botão acima para acessar os exercícios.")
+        st.caption("Os exercícios serão abertos/baixados diretamente do Google Drive. Certifique-se de que o arquivo está configurado para 'Qualquer pessoa com o link'.")
+    else:
+        st.warning(f"Exercícios para '{curso_selecionado_exercicio}' não encontrados no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
