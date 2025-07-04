@@ -172,7 +172,7 @@ with tab_detalhamento:
     }).set_index("Curso"))
 
 # =============================================================================
-# Conteúdo da Aba "Ementas dos Cursos" - IDs de Ementas
+# Conteúdo da Aba "Ementas dos Cursos" - IDs de Ementas (Mantidos)
 # =============================================================================
 with tab_ementas:
     st.subheader("Acessar Ementas dos Cursos")
@@ -208,35 +208,39 @@ with tab_ementas:
         file_id = google_drive_ementa_ids[curso_selecionado_ementa]
         pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
         
+        st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
+        
         st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
 
+        st.success("Clique no link ou botão acima para acessar a ementa.")
+        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link'.")
     else:
         st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
 
 # =============================================================================
-# NOVA ABA: Exercícios - IDs dos Exercícios (Corrigidos e Completos)
+# NOVA ABA: Exercícios - IDs dos Exercícios (Atualizados)
 # =============================================================================
 with tab_exercicios:
     st.subheader("Acessar Exercícios dos Cursos")
 
     # DICIONÁRIO DE MAPEAMENTO: Curso -> Google Drive File ID para EXERCÍCIOS
-    # Estes IDs foram fornecidos por você como sendo os dos EXERCÍCIOS.
+    # Estes IDs foram fornecidos por você como sendo os dos EXERCÍCIOS, atualizados.
     google_drive_exercicio_ids = {
-        "Banco de Dados": "1wzXsy8ZlcepCzErjXDe05Gx3AbcHJPIA",
-        "Introdução a Web": "15twxPTsqtB99OhD4LYJVq6C_nhZ_xmiv", # Novo link de exercício
-        "Flutter": "1y7tXCeAFHuvXf2zxR591PoI1WMTTideX",
-        "Fundamentos de Interface": "1SgA5seeRl6zKgMcu9K3YL9orOUk_dP92",
-        "POO": "1ZYjfUP242N-R1KwpLNxf8WjJG_RF8wqn", # ID de exercício de POO confirmado
-        "JavaScript": "17uoCTOFEGG3PPa4oZgU68GkQWLyFANam", # NOVO ID CORRETO para exercício de JS
-        "Linux": "1WwyJrkgqZOULKffMWnYGCULyFtPY0X-5",
-        "Web com mentalidade ágil": "11DZlx4-zDP7UlnhlChja_pmG2Z5QQaUw", # Mapeado de "Mentalidade Agil"
-        "No Code": "1lgsguKrm4Y2UZtD5VZkjbb63ABg821L6",
-        "Python II": "1dYuBwLDVDvsB5LNTuMD39iIAPGT2RWa_",
-        "Python": "1jUs88fMfC9skfDMkRElgOtK8NDpST4YO", # Mapeado de "Python I"
-        "React JS": "1PadtJW4-8HHXPj2xj7I4LupRMOOlV9uD",
-        "React Native": "1UV3ZyENIWCRO2GpGmq7gl8OqLUDNUUAm",
-        "Scratch": "1QpxqQj44x3hdmC1VEkjmCamWd5dZooyw", # Novo link de exercício
-        "Frameworks Front-End": "1mG0MlxJQeK-cdNRMZnCY2Ggd-8fn_Llz", # Mapeado de "Desenvolvimento de Interfaces Web"
+        "Banco de Dados": "1_tGDhUvGPkfoAdXd8XHSlqTvC-Pw5wTi",
+        "Flutter": "1RbtmNKfAGr0sXGpTmyJ-mGIJOoBNygRR",
+        "Fundamentos de Interface": "1beD7viSPwJMD_Ye55pw4IZZxU5OEpd4D",
+        "Introdução a Web": "1QHfTLurpFnmZZEKLRrV5r7VTIphWry4w", # Mapeado de "Introdução a HTML"
+        "JavaScript": "1l8WbgIdY4IxemAxb-x_aMk0_BgQib1IM",
+        "Linux": "1ubGMQYxrNyLmvjGhXvP_xz5HeHhp-12x",
+        "Web com mentalidade ágil": "1FPjSt4WI6jWegKnw42j6TGGDOrWPDA4S", # Mapeado de "Mentalidade Agil"
+        "No Code": "1sohrZ1g-uqdh78lY0GgXRC5MhQMMy3oA",
+        "POO": "1kK7r5Sb5PI6E9s5JL-LRXJbBIcUC6JPw",
+        "Python II": "1F8aEGb7fSEEJ2kpJBx-RKVuaALBeTb14",
+        "Python": "1z1EhnDS_piueULzKjOY7ZvG1AwVd3THn", # Mapeado de "Python"
+        "React JS": "1rmU9B8X7SR3zqbVwxyYgiXX8MeCMmHgA",
+        "React Native": "15rCdwADCvMMA7Ezhz-lfJpyFTzbuyM-k", # NOVO ID para React Native (diferente de Scratch)
+        "Scratch": "1m8BWyOjwuVvYhpa-WZUxxbzFQq6xxhW0", # NOVO ID para Scratch (diferente de React Native)
+        "Frameworks Front-End": "1XZkk0CtpD3cGWV-iNCyQa6totLGdrSeN", # Mapeado de "framework de front-end"
     }
 
     # Base URL para links de download direto do Google Drive (o mesmo)
@@ -250,8 +254,11 @@ with tab_exercicios:
         file_id_exercicio = google_drive_exercicio_ids[curso_selecionado_exercicio]
         exercicio_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id_exercicio}"
         
+        st.markdown(f"**[{curso_selecionado_exercicio} - Clique para abrir/baixar os Exercícios]({exercicio_url})**", unsafe_allow_html=True)
+        
         st.markdown(f'<a href="{exercicio_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Exercícios de {curso_selecionado_exercicio} em Nova Aba</a>', unsafe_allow_html=True)
 
-
+        st.success("Clique no link ou botão acima para acessar os exercícios.")
+        st.caption("Os exercícios serão abertos/baixados diretamente do Google Drive. Certifique-se de que o arquivo está configurado para 'Qualquer pessoa com o link'.")
     else:
         st.warning(f"Exercícios para '{curso_selecionado_exercicio}' não encontrados no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
