@@ -27,6 +27,7 @@ data = [
     ["Módulo 4", "NoSQL", "00:00:00", "00:00:00"],
     ["Módulo 4", "Teste de Software para Android", "00:00:00", "00:00:00"],
     ["Módulo 4", "Teste de Software para Web", "00:00:00", "00:00:00"],
+    ["Módulo 4", "Padrão de Projeto", "00:00:00", "00:00:00"], # NOVO CURSO
 ]
 
 def time_to_seconds(t):
@@ -94,7 +95,7 @@ with tab_geral:
     ))
 
     for i, row in resumo_modulo.iterrows():
-        # Adiciona anotação de redução apenas se o tempo "Antes" não for 0 para evitar "inf"
+        # Adiciona anotação de redução apenas se o tempo "Antes" for maior que 0
         if row["Antes_seg"] > 0:
             fig_geral.add_annotation(
                 x=row["Módulo"],
@@ -152,7 +153,7 @@ with tab_detalhamento:
     ))
 
     for i, row in df_mod.iterrows():
-        # Adiciona anotação de redução apenas se o tempo "Antes" não for 0
+        # Adiciona anotação de redução apenas se o tempo "Antes" for maior que 0
         if row["Antes_seg"] > 0:
             fig_det.add_annotation(
                 x=row["Curso"],
@@ -184,7 +185,7 @@ with tab_detalhamento:
     }).set_index("Curso"))
 
 # =============================================================================
-# Conteúdo da Aba "Ementas dos Cursos" - IDs de Ementas (Atualizados)
+# Conteúdo da Aba "Ementas dos Cursos" - IDs de Ementas (Atualizados e com seleção por Módulo)
 # =============================================================================
 with tab_ementas:
     st.subheader("Acessar Ementas dos Cursos")
@@ -205,38 +206,47 @@ with tab_ementas:
         "Web com mentalidade ágil": "1Mfvqg_p5y6UnYGF79w-K1fUxWKJxajlM",
         "Frameworks Front-End": "1CKK6oZ3cGXcLmxxrwBV6fTLssOAN1_Is",
         "React Native": "1R2fno9IohbpDisR2743dGN-oU8ZYkjqw",
-        "Flutter": "1gpSctdd8Uf6rsmSMNTmp-eltq5-DxXa-hO",
-        # NOVAS EMENTAS
+        "Flutter": "1gpSctdd8Uf6rsmNTmp-eltq5-DxXa-hO",
         "Desenvolvimento Android": "1wZTlwX7X1k3q54Nh13Z8E9NMrR6G3uZ1",
         "Desenvolvimento FullStack": "1VnBbJFECntcAaC9YAUu2RkZbiW_egVbq",
         "Fundamentos das APIs RESTful": "1P5y5Sh7lHysqA2pBFSd2Fwm9V6ZRCw2F",
         "NoSQL": "1fhkY-z0c_JniaWBWbeuW3KB3BxnXSEqb",
         "Teste de Software para Android": "1iwFF3aDlBiNPd1k1fbUPH9XAq9jl1ojS",
         "Teste de Software para Web": "1YArR5qwgVEQv84r7Fs1AQt-YkgulBhcO",
+        "Padrão de Projeto": "14Uj3i7BuvmXeL-aTh2R4-uDaMKArhJ1W", # NOVO CURSO
     }
 
     # Base URL para links de download direto do Google Drive
     GOOGLE_DRIVE_DOWNLOAD_BASE_URL = "https://drive.google.com/uc?export=download&id="
 
-    # Selecionar o curso
-    cursos_para_ementa = sorted(df["Curso"].unique())
-    curso_selecionado_ementa = st.selectbox("Escolha o curso para acessar a ementa:", cursos_para_ementa)
+    # Seleção do módulo para ementas
+    modulos_ementa = sorted(df["Módulo"].unique())
+    modulo_selecionado_ementa = st.selectbox("Selecione o Módulo para a Ementa:", modulos_ementa, key="mod_ementa_sel")
 
-    if curso_selecionado_ementa in google_drive_ementa_ids:
-        file_id = google_drive_ementa_ids[curso_selecionado_ementa]
-        pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
-        
-        st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
-        
-        st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
+    # Filtra os cursos baseados no módulo selecionado
+    cursos_do_modulo_ementa = sorted(df[df["Módulo"] == modulo_selecionado_ementa]["Curso"].unique())
+    
+    # Selecionar o curso dentro do módulo
+    if cursos_do_modulo_ementa:
+        curso_selecionado_ementa = st.selectbox("Escolha o curso para acessar a ementa:", cursos_do_modulo_ementa, key="curso_ementa_sel")
 
-        st.success("Clique no link ou botão acima para acessar a ementa.")
-        st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link'.")
+        if curso_selecionado_ementa in google_drive_ementa_ids:
+            file_id = google_drive_ementa_ids[curso_selecionado_ementa]
+            pdf_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id}"
+            
+            st.markdown(f"**[{curso_selecionado_ementa} - Clique para abrir/baixar a Ementa]({pdf_url})**", unsafe_allow_html=True)
+            
+            st.markdown(f'<a href="{pdf_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Ementa de {curso_selecionado_ementa} em Nova Aba</a>', unsafe_allow_html=True)
+
+            st.success("Clique no link ou botão acima para acessar a ementa.")
+            st.caption("A ementa será aberta/baixada diretamente do Google Drive. Certifique-se de que o PDF está configurado para 'Qualquer pessoa com o link'.")
+        else:
+            st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
     else:
-        st.warning(f"Ementa para '{curso_selecionado_ementa}' não encontrada no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
+        st.info(f"Nenhum curso encontrado no {modulo_selecionado_ementa} para exibir ementas.")
 
 # =============================================================================
-# NOVA ABA: Exercícios - IDs dos Exercícios (Atualizados)
+# NOVA ABA: Exercícios - IDs dos Exercícios (Atualizados e com seleção por Módulo)
 # =============================================================================
 with tab_exercicios:
     st.subheader("Acessar Exercícios dos Cursos")
@@ -258,31 +268,40 @@ with tab_exercicios:
         "React Native": "15rCdwADCvMMA7Ezhz-lfJpyFTzbuyM-k",
         "Scratch": "1m8BWyOjwuVvYhpa-WZUxxbzFQq6xxhW0",
         "Frameworks Front-End": "1XZkk0CtpD3cGWV-iNCyQa6totLGdrSeN", # Mapeado de "framework de front-end"
-        # NOVOS EXERCÍCIOS
         "Desenvolvimento Android": "1uFaem8hiN53Cl63a0rGNyBYBl8fzBfww",
         "Desenvolvimento FullStack": "1f8ohpsgyX9zq7ynDDlI4mlOoeogv2oWt",
         "Fundamentos das APIs RESTful": "1CJnMfJeRKmAsuqW5Gxd7gHrHFawDVFT7",
         "NoSQL": "1yNDXFcRu087khOjYAsaRFzv7lY1JCzKs",
-        "Teste de Software para Android": "1N3tKvEiinOUVCC_yKB5AfkDF4u3GGCnV", 
+        "Teste de Software para Android": "1kj9G8bRMR7_mQk6PyU8_y2J6BDkazYMk", # LINK CORRIGIDO!
         "Teste de Software para Web": "11gKzBXPu48yLmFNyhnpTACdze2eNCN48",
+        "Padrão de Projeto": "1dskkjwfE-FABHryUKURgY5sIF9F7zodU", # NOVO CURSO
     }
 
     # Base URL para links de download direto do Google Drive (o mesmo)
     GOOGLE_DRIVE_DOWNLOAD_BASE_URL = "https://drive.google.com/uc?export=download&id="
 
-    # Selecionar o curso para os exercícios
-    cursos_para_exercicio = sorted(df["Curso"].unique())
-    curso_selecionado_exercicio = st.selectbox("Escolha o curso para acessar os exercícios:", cursos_para_exercicio)
+    # Seleção do módulo para exercícios
+    modulos_exercicio = sorted(df["Módulo"].unique())
+    modulo_selecionado_exercicio = st.selectbox("Selecione o Módulo para o Exercício:", modulos_exercicio, key="mod_exerc_sel")
 
-    if curso_selecionado_exercicio in google_drive_exercicio_ids:
-        file_id_exercicio = google_drive_exercicio_ids[curso_selecionado_exercicio]
-        exercicio_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id_exercicio}"
-        
-        st.markdown(f"**[{curso_selecionado_exercicio} - Clique para abrir/baixar os Exercícios]({exercicio_url})**", unsafe_allow_html=True)
-        
-        st.markdown(f'<a href="{exercicio_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Exercícios de {curso_selecionado_exercicio} em Nova Aba</a>', unsafe_allow_html=True)
+    # Filtra os cursos baseados no módulo selecionado
+    cursos_do_modulo_exercicio = sorted(df[df["Módulo"] == modulo_selecionado_exercicio]["Curso"].unique())
+    
+    # Selecionar o curso dentro do módulo
+    if cursos_do_modulo_exercicio:
+        curso_selecionado_exercicio = st.selectbox("Escolha o curso para acessar os exercícios:", cursos_do_modulo_exercicio, key="curso_exerc_sel")
 
-        st.success("Clique no link ou botão acima para acessar os exercícios.")
-        st.caption("Os exercícios serão abertos/baixados diretamente do Google Drive. Certifique-se de que o arquivo está configurado para 'Qualquer pessoa com o link'.")
+        if curso_selecionado_exercicio in google_drive_exercicio_ids:
+            file_id_exercicio = google_drive_exercicio_ids[curso_selecionado_exercicio]
+            exercicio_url = f"{GOOGLE_DRIVE_DOWNLOAD_BASE_URL}{file_id_exercicio}"
+            
+            st.markdown(f"**[{curso_selecionado_exercicio} - Clique para abrir/baixar os Exercícios]({exercicio_url})**", unsafe_allow_html=True)
+            
+            st.markdown(f'<a href="{exercicio_url}" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 10px;">Abrir Exercícios de {curso_selecionado_exercicio} em Nova Aba</a>', unsafe_allow_html=True)
+
+            st.success("Clique no link ou botão acima para acessar os exercícios.")
+            st.caption("Os exercícios serão abertos/baixados diretamente do Google Drive. Certifique-se de que o arquivo está configurado para 'Qualquer pessoa com o link'.")
+        else:
+            st.warning(f"Exercícios para '{curso_selecionado_exercicio}' não encontrados no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
     else:
-        st.warning(f"Exercícios para '{curso_selecionado_exercicio}' não encontrados no mapeamento. Por favor, adicione o ID do Google Drive para este curso.")
+        st.info(f"Nenhum curso encontrado no {modulo_selecionado_exercicio} para exibir exercícios.")
